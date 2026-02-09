@@ -25,20 +25,6 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Arrière-plan animé */
-        body::before {
-            content: "";
-            position: absolute;
-            width: 300px; height: 300px;
-            background: var(--primary);
-            filter: blur(150px);
-            border-radius: 50%;
-            z-index: -1;
-            top: 10%; left: 10%;
-            opacity: 0.3;
         }
 
         .container {
@@ -46,14 +32,15 @@
             max-width: 550px;
             background: var(--glass);
             backdrop-filter: blur(20px);
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 30px;
             border: 1px solid var(--glass-border);
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            text-align: center;
         }
 
         h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             margin: 0;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
@@ -61,69 +48,58 @@
             font-weight: 800;
         }
 
-        .subtitle { color: #94a3b8; margin-bottom: 2rem; font-size: 1.1rem; }
+        .subtitle { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.9rem; }
 
-        /* Formulaire */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .input-box { text-align: left; margin-bottom: 1.2rem; }
-        label { display: block; font-size: 0.85rem; color: var(--primary); margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
+        .input-box { text-align: left; margin-bottom: 1rem; }
+        label { display: block; font-size: 0.75rem; color: var(--primary); margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
         
-        input {
+        input, select {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
             font-size: 1rem;
-            transition: 0.3s;
             box-sizing: border-box;
         }
 
-        input:focus { border-color: var(--primary); outline: none; background: rgba(15, 23, 42, 0.9); }
+        select option { background: #1e293b; }
 
         .btn-main {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             border: none;
-            border-radius: 15px;
+            border-radius: 12px;
             color: white;
             font-weight: 900;
-            font-size: 1.1rem;
             cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 10px;
         }
 
-        .btn-main:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0, 210, 255, 0.4); }
-
-        /* Loader */
         #loader { display: none; margin: 20px 0; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: auto; }
+        .spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Résultats */
-        #result { display: none; margin-top: 2rem; padding: 20px; border-radius: 20px; animation: slideUp 0.5s ease; }
+        #result-container { display: none; margin-top: 1.5rem; animation: slideUp 0.5s ease; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } }
 
-        /* Section Négociation */
-        .nego-card {
-            display: none;
-            background: linear-gradient(135deg, rgba(58, 123, 213, 0.1), rgba(0, 210, 255, 0.1));
+        .status-badge { padding: 8px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
+        .bad-deal { color: var(--danger); border: 1px solid var(--danger); background: rgba(255, 75, 43, 0.1); }
+        .good-deal { color: var(--success); border: 1px solid var(--success); background: rgba(0, 255, 136, 0.1); }
+
+        .nego-form {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 15px;
             border: 1px solid var(--primary);
-            padding: 20px;
-            border-radius: 20px;
-            margin-top: 20px;
             text-align: left;
+            margin-top: 15px;
         }
 
-        .rgpd { font-size: 0.75rem; color: #64748b; margin-top: 15px; display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
-        .rgpd input { width: auto; margin-top: 3px; }
-
-        .btn-nego {
+        .btn-submit {
             background: white;
             color: #0f172a;
             font-weight: bold;
@@ -131,7 +107,7 @@
             padding: 12px;
             border-radius: 10px;
             width: 100%;
-            margin-top: 15px;
+            margin-top: 10px;
             cursor: pointer;
         }
     </style>
@@ -139,125 +115,111 @@
 <body>
 
 <div class="container">
-    <h1>AutoScan<span style="color:var(--text)">.</span></h1>
-    <p class="subtitle">Analyse IA du marché automobile en temps réel</p>
+    <h1>AutoScan.</h1>
+    <p class="subtitle">Analyse instantanée & Aide à la négociation</p>
 
-    <div class="input-box">
-        <label><i class="fa-solid fa-car"></i> Modèle & Année</label>
-        <input type="text" id="model" placeholder="Ex: Peugeot 208, 2021">
-    </div>
-
-    <div class="grid">
+    <div id="step-1">
         <div class="input-box">
-            <label><i class="fa-solid fa-tag"></i> Prix (€)</label>
-            <input type="number" id="price" placeholder="18500">
+            <label>Modèle du véhicule</label>
+            <input type="text" id="car_model" placeholder="Ex: BMW Série 1, Clio 4...">
         </div>
-        <div class="input-box">
-            <label><i class="fa-solid fa-gauge-high"></i> Kilométrage</label>
-            <input type="number" id="km" placeholder="45000">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="input-box">
+                <label>Année</label>
+                <input type="number" id="car_year" placeholder="2018">
+            </div>
+            <div class="input-box">
+                <label>Équipement</label>
+                <select id="car_options">
+                    <option value="Basique">Basique (Standard)</option>
+                    <option value="Bien équipée">Bien équipée (GPS, Cuir...)</option>
+                    <option value="Full options">Full options (Toit pano...)</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <button class="btn-main" onclick="lancerAnalyse()">Analyser maintenant</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="input-box">
+                <label>Prix (€)</label>
+                <input type="number" id="user_price" placeholder="12500">
+            </div>
+            <div class="input-box">
+                <label>Kilométrage</label>
+                <input type="number" id="user_km" placeholder="95000">
+            </div>
+        </div>
+        
+        <button class="btn-main" onclick="analyser()">Scanner l'offre</button>
+    </div>
 
     <div id="loader">
         <div class="spinner"></div>
-        <p style="font-size: 0.9rem; margin-top: 10px; color: var(--primary)">Scraping des bases de données en cours...</p>
+        <p style="font-size: 0.8rem; margin-top: 10px;">Comparaison avec 500+ annonces...</p>
     </div>
 
-    <div id="result"></div>
+    <div id="result-container">
+        <div id="verdict"></div>
 
-    <div id="nego-section" class="nego-card">
-        <h3 style="margin-top:0"><i class="fa-solid fa-handshake"></i> On négocie pour vous ?</h3>
-        <p style="font-size: 0.9rem; color: #cbd5e1;">Nos experts récupèrent en moyenne <b>1 200 €</b> sur ce type de modèle. Laissez-nous vos coordonnées :</p>
-        
-        <div class="grid">
-            <input type="text" id="fname" placeholder="Prénom">
-            <input type="text" id="lname" placeholder="Nom">
-        </div>
-        <input type="text" id="contact" placeholder="Email ou Numéro WhatsApp" style="margin-top:10px">
-        
-        <label class="rgpd">
-            <input type="checkbox" id="rgpd-check">
-            <span>J'accepte que mes données soient utilisées pour être recontacté dans le cadre de ma négociation.</span>
-        </label>
+        <form action="https://formspree.io/f/xvzbgakq" method="POST" class="nego-form">
+            <h4 style="margin:0 0 10px 0; color: var(--primary);"><i class="fa-solid fa-handshake"></i> Mandat de négociation</h4>
+            
+            <input type="hidden" name="_subject" value="Nouveau dossier de négociation !">
+            <input type="hidden" name="Modele" id="hidden_model">
+            <input type="hidden" name="Annee" id="hidden_year">
+            <input type="hidden" name="Equipement" id="hidden_options">
+            <input type="hidden" name="Prix" id="hidden_price">
+            <input type="hidden" name="KM" id="hidden_km">
 
-        <button class="btn-nego" onclick="envoyerDemande()">Recevoir mon plan de négociation</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <input type="text" name="Prenom" placeholder="Prénom" required>
+                <input type="text" name="Nom" placeholder="Nom" required>
+            </div>
+            <input type="text" name="Contact" placeholder="Email ou WhatsApp" required style="margin-bottom: 10px;">
+            
+            <button type="submit" class="btn-submit">Décrocher une remise</button>
+        </form>
     </div>
 </div>
 
 <script>
-    function lancerAnalyse() {
-        const price = document.getElementById('price').value;
-        const model = document.getElementById('model').value;
+    function analyser() {
+        const model = document.getElementById('car_model').value;
+        const year = document.getElementById('car_year').value;
+        const options = document.getElementById('car_options').value;
+        const price = document.getElementById('user_price').value;
+        const km = document.getElementById('user_km').value;
 
-        if (!price || !model) {
-            alert("Veuillez remplir les informations du véhicule.");
-            return;
-        }
+        if (!model || !price || !year) return alert("Remplis les champs essentiels (Modèle, Année, Prix) !");
 
-        // Animation de chargement
-        document.getElementById('result').style.display = 'none';
-        document.getElementById('nego-section').style.display = 'none';
+        document.getElementById('step-1').style.display = 'none';
         document.getElementById('loader').style.display = 'block';
+
+        // Remplissage des données pour Formspree
+        document.getElementById('hidden_model').value = model;
+        document.getElementById('hidden_year').value = year;
+        document.getElementById('hidden_options').value = options;
+        document.getElementById('hidden_price').value = price + " €";
+        document.getElementById('hidden_km').value = km + " km";
 
         setTimeout(() => {
             document.getElementById('loader').style.display = 'none';
-            afficherResultat(price);
-        }, 2000); // Simule 2 secondes de recherche
-    }
-
-    function afficherResultat(price) {
-        const resultDiv = document.getElementById('result');
-        const negoSection = document.getElementById('nego-section');
-        resultDiv.style.display = 'block';
-
-        if (price < 15000) {
-            resultDiv.innerHTML = `
-                <div style="color: var(--success); font-weight: bold; border: 1px solid var(--success); padding: 10px; border-radius: 10px; background: rgba(0, 255, 136, 0.1)">
-                    <i class="fa-solid fa-star"></i> PÉPITE DÉTECTÉE
-                </div>
-                <h2 style="margin: 15px 0 5px 0;">Offre Excellente</h2>
-                <p style="color: #94a3b8">Le prix est 12% sous la moyenne du marché actuel.</p>
-            `;
-            negoSection.style.display = 'none';
-        } else {
-            resultDiv.innerHTML = `
-                <div style="color: var(--danger); font-weight: bold; border: 1px solid var(--danger); padding: 10px; border-radius: 10px; background: rgba(255, 75, 43, 0.1)">
-                    <i class="fa-solid fa-triangle-exclamation"></i> PRIX ÉLEVÉ
-                </div>
-                <h2 style="margin: 15px 0 5px 0;">Mauvaise Affaire</h2>
-                <p style="color: #94a3b8">Cette voiture est surévaluée de 1 800 € environ.</p>
-            `;
-            negoSection.style.display = 'block';
-        }
-    }
-
-    function envoyerDemande() {
-        const fname = document.getElementById('fname').value;
-        const lname = document.getElementById('lname').value;
-        const contact = document.getElementById('contact').value;
-        const rgpd = document.getElementById('rgpd-check').checked;
-
-        if (!fname || !lname || !contact) {
-            alert("Merci de remplir tous les champs de contact.");
-            return;
-        }
-
-        if (!rgpd) {
-            alert("Merci d'accepter les conditions RGPD.");
-            return;
-        }
-
-        alert(`Merci ${fname} ! Notre expert en négociation va analyser votre dossier et vous recontactera sur ${contact}.`);
-        
-        // Ici tu pourrais envoyer les données vers ta base de données
-        console.log({
-            nom: lname,
-            prenom: fname,
-            contact: contact,
-            voiture: document.getElementById('model').value
-        });
+            document.getElementById('result-container').style.display = 'block';
+            
+            const verdict = document.getElementById('verdict');
+            // Logique de démo : on simule que si c'est cher (>15k), c'est une mauvaise affaire
+            if (price > 15000) {
+                verdict.innerHTML = `
+                    <div class="status-badge bad-deal">⚠️ ANALYSE : TROP CHER</div>
+                    <p style="font-size: 0.9rem;">D'après l'année <b>${year}</b> et l'équipement <b>${options}</b>, ce véhicule est surévalué.</p>
+                `;
+            } else {
+                verdict.innerHTML = `
+                    <div class="status-badge good-deal">✅ ANALYSE : PRIX CORRECT</div>
+                    <p style="font-size: 0.9rem;">C'est une offre décente pour un modèle <b>${year}</b>, mais on peut encore gratter 5 à 10%.</p>
+                `;
+            }
+        }, 1500);
     }
 </script>
 
